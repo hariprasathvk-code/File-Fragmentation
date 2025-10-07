@@ -41,11 +41,25 @@ namespace FileFragmentationMVC.Controllers
                     ConsoleView.DisplayMessage(Path.GetFileName(frag.FileName));
 
                 //Verify fragment
-                string fragName = ConsoleView.GetUserInput("\nEnter fragment to check: ");
-                string fragPath = Path.Combine(folder_Path, fragName);
-                string fragContent = file_Manager.CheckFragment(fragPath);
-                ConsoleView.DisplayMessage($"\nContent of {fragName}: {fragContent}");
+                bool checkMore = true;
+                while (checkMore)
+                {
+                    string fragName = ConsoleView.GetUserInput("\nEnter fragment to check: ");
+                    string fragPath = Path.Combine(folder_Path, fragName);
 
+                    if (File.Exists(fragPath))
+                    {
+                        string fragContent = file_Manager.CheckFragment(fragPath);
+                        ConsoleView.DisplayMessage($"\nContent of {fragName}: {fragContent}");
+                    }
+                    else
+                    {
+                        ConsoleView.DisplayMessage("\nFile not found! Please enter a valid fragment name.");
+                    }
+
+                    string again = ConsoleView.GetUserInput("\nDo you want to check another fragment? (y/n): ").Trim().ToLower();
+                    checkMore = (again == "y");
+                }
                 //Defragmentation
                 file_Manager.DefragmentFiles(frag_ments, output_File);
                 ConsoleView.DisplayMessage($"\nDefragmentation Completed - Output file created: {output_File}");
