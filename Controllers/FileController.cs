@@ -22,6 +22,11 @@ namespace FileFragmentationMVC.Controllers
                 //file exist check
                 if (!Directory.Exists(folder_Path))
                     Directory.CreateDirectory(folder_Path);
+                //delete existing files 
+                foreach (var file in Directory.GetFiles(folder_Path))
+                {
+                    File.Delete(file);
+                }
 
                 //input
                 string paragraph = ConsoleView.GetUserInput("Enter paragraph: ");
