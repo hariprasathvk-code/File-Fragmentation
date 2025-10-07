@@ -8,55 +8,52 @@ namespace FileFragmentationMVC.Controllers
 {
     public class FileController
     {
-        private FileManager _fileManager = new FileManager();
-        private List<Fragment> _fragments = new List<Fragment>();
-        private string _folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Files");
-        private string _inputFile => Path.Combine(_folderPath, "input.txt");
-        private string _outputFile => Path.Combine(_folderPath, "output.txt");
+        private FileManager file_Manager = new FileManager();
+        private List<Fragment> frag_ments = new List<Fragment>();
+        private string folder_Path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Files");
+        private string input_File => Path.Combine(folder_Path, "input.txt");
+        private string output_File => Path.Combine(folder_Path, "output.txt");
 
 
         public void Run()
         {
             try
             {
-                // Ensure folder exists
-                if (!Directory.Exists(_folderPath))
-                    Directory.CreateDirectory(_folderPath);
+                //file exist check
+                if (!Directory.Exists(folder_Path))
+                    Directory.CreateDirectory(folder_Path);
 
-                // Step 1: Create input file
+                //input
                 string paragraph = ConsoleView.GetUserInput("Enter paragraph: ");
                 if (string.IsNullOrWhiteSpace(paragraph))
                     throw new ArgumentException("Paragraph cannot be empty!");
-                _fileManager.CreateFile(_inputFile, paragraph);
+                file_Manager.CreateFile(input_File, paragraph);
 
-                // Step 2: Fragmentation
-                int fragSize = int.Parse(ConsoleView.GetUserInput("Enter fragment size (number of characters per file): "));
+                //Fragmentation
+                int fragSize = int.Parse(ConsoleView.GetUserInput("Enter the number of characters per file: "));
                 if (fragSize <= 0)
                     throw new ArgumentException("Fragment size must be greater than zero.");
 
-                _fragments = _fileManager.FragmentFile(_inputFile, _folderPath, fragSize);
+                frag_ments = file_Manager.FragmentFile(input_File, folder_Path, fragSize);
 
                 ConsoleView.DisplayMessage("\nFragments created:");
-                foreach (var frag in _fragments)
+                foreach (var frag in frag_ments)
                     ConsoleView.DisplayMessage(Path.GetFileName(frag.FileName));
 
-                // Step 3: Verify fragment
+                //Verify fragment
                 string fragName = ConsoleView.GetUserInput("\nEnter fragment to check: ");
-                string fragPath = Path.Combine(_folderPath, fragName);
-                string fragContent = _fileManager.CheckFragment(fragPath);
+                string fragPath = Path.Combine(folder_Path, fragName);
+                string fragContent = file_Manager.CheckFragment(fragPath);
                 ConsoleView.DisplayMessage($"\nContent of {fragName}: {fragContent}");
 
-                // Step 4: Defragmentation
-                _fileManager.DefragmentFiles(_fragments, _outputFile);
-                ConsoleView.DisplayMessage($"\nDefragmentation done. Output file created: {_outputFile}");
+                //Defragmentation
+                file_Manager.DefragmentFiles(frag_ments, output_File);
+                ConsoleView.DisplayMessage($"\nDefragmentation Completed - Output file created: {output_File}");
 
-                // Step 5: Compare input and output files
-                bool isEqual = _fileManager.CompareFiles(_inputFile, _outputFile);
-                ConsoleView.DisplayMessage(isEqual ? "\nSuccess! Input and Output files are identical."
+                //Compare input and output files
+                bool isEqual = file_Manager.CompareFiles(input_File, output_File);
+                ConsoleView.DisplayMessage(isEqual ? "\nSuccess! Input and Output files are same."
                                                     : "\nSomething went wrong! Files do not match.");
-
-                // Step 6: Skip cleanup
-                ConsoleView.DisplayMessage("\nAll files have been kept. You can delete them manually if needed.");
             }
             catch (Exception ex)
             {
